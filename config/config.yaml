@@ -1,0 +1,25 @@
+http:
+  hostname: ""
+  port: 8000
+  readTimeout: "5s"
+  writeTimeout: "10s"
+  idleTimeout: "2m"
+
+app:
+  name: "Pagoda"
+  environment: "local"
+  # Change this on any live environments
+  encryptionKey: "?E(G+KbPeShVmYq3t6w9z$C&F)J@McQf"
+  encryptionExpiration: "60m"
+  timeout: "20s"
+
+cache:
+  capacity: 100000
+  expiration:
+    staticFile: "4380h"
+    page: "24h"
+
+database:
+  driver: "sqlite3"
+  connection: "dbs/main.db?_journal=WAL&_timeout=5000&_fk=true"
+  testConnection: ":memory:?_journal=WAL&_timeout=5000&_fk=true"

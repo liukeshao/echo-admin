@@ -25,6 +25,7 @@ func (e *Endpoints) BuildRouter() error {
 			},
 		),
 	)
+	e.container.Web.HTTPErrorHandler = customHTTPErrorHandler
 
 	// swagger
 	g.GET("/swagger/*", echoSwagger.WrapHandler)

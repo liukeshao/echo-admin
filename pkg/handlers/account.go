@@ -79,9 +79,9 @@ func (h *AccountHandler) Login(ctx echo.Context) error {
 // @Param request body types.RegisterInput true "params"
 // @Success 200 {object} ent.User
 // @Router /account/register [post]
-func (h *AccountHandler) Register(ctx echo.Context) error {
+func (h *AccountHandler) Register(c echo.Context) error {
 	var input types.RegisterInput
-	errs := types.RegisterInputSchema.Parse(zhttp.Request(ctx.Request()), &input)
+	errs := types.RegisterInputSchema.Parse(zhttp.Request(c.Request()), &input)
 	if errs != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, errs)
 	}
@@ -89,11 +89,11 @@ func (h *AccountHandler) Register(ctx echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	user, err := h.user.Create(ctx.Request().Context(), input.Email, password)
+	user, err := h.user.Create(c.Request().Context(), input.Email, password)
 	if err != nil {
 		return Fail(err, "error creating user")
 	}
-	return ctx.JSON(http.StatusOK, user)
+	return c.JSON(http.StatusOK, user)
 }
 
 // Profile godoc

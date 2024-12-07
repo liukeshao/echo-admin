@@ -112,16 +112,12 @@ const docTemplate = `{
                     "description": "头像路径",
                     "type": "string"
                 },
-                "created_at": {
-                    "description": "CreatedAt holds the value of the \"created_at\" field.",
+                "create_time": {
+                    "description": "CreateTime holds the value of the \"create_time\" field.",
                     "type": "string"
                 },
-                "created_by": {
-                    "description": "创建者",
-                    "type": "string"
-                },
-                "deleted_time": {
-                    "description": "删除标志（0代表存在）",
+                "delete_time": {
+                    "description": "delete time stamp",
                     "type": "integer"
                 },
                 "display_name": {
@@ -152,12 +148,8 @@ const docTemplate = `{
                     "description": "手机号码",
                     "type": "string"
                 },
-                "updated_at": {
-                    "description": "UpdatedAt holds the value of the \"updated_at\" field.",
-                    "type": "string"
-                },
-                "updated_by": {
-                    "description": "更新者",
+                "update_time": {
+                    "description": "UpdateTime holds the value of the \"update_time\" field.",
                     "type": "string"
                 }
             }
@@ -166,9 +158,11 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "email": {
+                    "description": "邮箱",
                     "type": "string"
                 },
                 "password": {
+                    "description": "密码",
                     "type": "string"
                 }
             }
@@ -185,9 +179,11 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "email": {
+                    "description": "邮箱",
                     "type": "string"
                 },
                 "password": {
+                    "description": "密码",
                     "type": "string"
                 }
             }

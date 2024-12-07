@@ -82,6 +82,6 @@ func (d SoftDeleteMixin) Hooks() []ent.Hook {
 // P adds a storage-level predicate to the queries and mutations.
 func (d SoftDeleteMixin) P(w interface{ WhereP(...func(*sql.Selector)) }) {
 	w.WhereP(
-		sql.FieldNEQ(d.Fields()[0].Descriptor().Name, 0),
+		sql.FieldEQ(d.Fields()[0].Descriptor().Name, 0),
 	)
 }

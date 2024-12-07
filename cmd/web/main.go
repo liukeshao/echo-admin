@@ -13,8 +13,6 @@ import (
 
 	"github.com/liukeshao/echo-admin/pkg/routers"
 	"github.com/liukeshao/echo-admin/pkg/services"
-
-	_ "github.com/liukeshao/echo-admin/docs"
 )
 
 func main() {

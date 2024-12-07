@@ -5,17 +5,16 @@ import (
 	echomw "github.com/labstack/echo/v4/middleware"
 	"github.com/liukeshao/echo-admin/pkg/middleware"
 	echoSwagger "github.com/swaggo/echo-swagger"
+
+	_ "github.com/liukeshao/echo-admin/docs"
 )
 
 // BuildRouter builds the router
 func (e *Endpoints) BuildRouter() error {
-	// swagger
-	//e.container.Web.GET("/swagger/*", echoSwagger.WrapHandler)
 	// default route group
 	g := e.container.Web.Group("")
 	g.Use(
 		echomw.Recover(),
-		echomw.Secure(),
 		echomw.RequestID(),
 		middleware.SetLogger(),
 		middleware.LogRequest(),
@@ -27,6 +26,7 @@ func (e *Endpoints) BuildRouter() error {
 		),
 	)
 
+	// swagger
 	g.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	jwtmw := echojwt.WithConfig(echojwt.Config{SigningKey: []byte(e.container.Config.App.EncryptionKey)})

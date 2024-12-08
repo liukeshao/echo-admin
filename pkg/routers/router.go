@@ -3,6 +3,7 @@ package routers
 import (
 	echojwt "github.com/labstack/echo-jwt/v4"
 	echomw "github.com/labstack/echo/v4/middleware"
+	"github.com/liukeshao/echo-admin/pkg/echox"
 	"github.com/liukeshao/echo-admin/pkg/middleware"
 	echoSwagger "github.com/swaggo/echo-swagger"
 
@@ -25,7 +26,7 @@ func (e *Endpoints) BuildRouter() error {
 			},
 		),
 	)
-	e.container.Web.HTTPErrorHandler = customHTTPErrorHandler
+	e.container.Web.HTTPErrorHandler = echox.ProblemHandler
 
 	// swagger
 	g.GET("/swagger/*", echoSwagger.WrapHandler)

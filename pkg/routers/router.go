@@ -3,11 +3,10 @@ package routers
 import (
 	echojwt "github.com/labstack/echo-jwt/v4"
 	echomw "github.com/labstack/echo/v4/middleware"
+	_ "github.com/liukeshao/echo-admin/docs"
 	"github.com/liukeshao/echo-admin/pkg/echox"
 	"github.com/liukeshao/echo-admin/pkg/middleware"
 	echoSwagger "github.com/swaggo/echo-swagger"
-
-	_ "github.com/liukeshao/echo-admin/docs"
 )
 
 // BuildRouter builds the router
@@ -45,6 +44,26 @@ func (e *Endpoints) BuildRouter() error {
 	{
 		accountGroup.GET("/profile", e.account.Profile).Name = "profile"
 		accountGroup.GET("/logout", e.account.Logout).Name = "logout"
+	}
+
+	// org
+	orgGroup := strictAuth.Group("")
+	{
+		orgGroup.POST("/api/orgs", nil).Name = "org.create"
+		orgGroup.PUT("/api/orgs/:orgID", nil).Name = "org.update"
+		orgGroup.DELETE("/api/orgs/:orgID", nil).Name = "org.delete"
+		orgGroup.GET("/api/orgs", nil).Name = "org.list"
+		orgGroup.GET("/api/orgs/:orgID", nil).Name = "org.get"
+	}
+
+	// cluster
+	clusterGroup := strictAuth.Group("")
+	{
+		clusterGroup.POST("/api/clusters", nil).Name = "cluster.create"
+		clusterGroup.PUT("/api/clusters/:clusterName", nil).Name = "cluster.update"
+		clusterGroup.DELETE("/api/clusters/:clusterName", nil).Name = "cluster.delete"
+		clusterGroup.GET("/api/clusters", nil).Name = "cluster.list"
+		clusterGroup.GET("/api/clusters/:clusterName", nil).Name = "cluster.get"
 	}
 
 	// pipeline

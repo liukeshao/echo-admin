@@ -2,6 +2,7 @@ package log
 
 import (
 	"log/slog"
+	"os"
 
 	"github.com/labstack/echo/v4"
 	"github.com/liukeshao/echo-admin/pkg/context"
@@ -23,5 +24,5 @@ func Ctx(ctx echo.Context) *slog.Logger {
 
 // Default returns the default logger
 func Default() *slog.Logger {
-	return slog.Default()
+	return slog.New(slog.NewJSONHandler(os.Stdout, nil))
 }

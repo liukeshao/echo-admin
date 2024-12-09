@@ -6,12 +6,6 @@ import (
 	"net/http"
 )
 
-// ErrorDetailer returns error details for responses & debugging. This enables
-// the use of custom error types. See `NewError` for more details.
-type ErrorDetailer interface {
-	ErrorDetail() *ErrorDetail
-}
-
 // ErrorDetail provides details about a specific error.
 type ErrorDetail struct {
 	// Message is a human-readable explanation of the error.
@@ -106,8 +100,9 @@ func (e *Problem) Error() string {
 //		Value: 5
 //	})
 func (e *Problem) Add(err error) {
-	if converted, ok := err.(ErrorDetailer); ok {
-		e.Errors = append(e.Errors, converted.ErrorDetail())
+	var ed *ErrorDetail
+	if errors.As(err, &ed) {
+		e.Errors = append(e.Errors, ed)
 		return
 	}
 
@@ -139,58 +134,6 @@ func (e *Problem) ContentType(ct string) string {
 // This should be implemented by the response body struct.
 type ContentTypeFilter interface {
 	ContentType(string) string
-}
-
-// StatusError is an error that has an HTTP status code. When returned from
-// an operation handler, this sets the response status code before sending it
-// to the client.
-type StatusError interface {
-	GetStatus() int
-	Error() string
-}
-
-// HeadersError is an error that has HTTP headers. When returned from an
-// operation handler, these headers are set on the response before sending it
-// to the client. Use `ErrorWithHeaders` to wrap an error like
-// `huma.Error400BadRequest` with additional headers.
-type HeadersError interface {
-	GetHeaders() http.Header
-	Error() string
-}
-
-type errWithHeaders struct {
-	err     error
-	headers http.Header
-}
-
-func (e *errWithHeaders) Error() string {
-	return e.err.Error()
-}
-
-func (e *errWithHeaders) Unwrap() error {
-	return e.err
-}
-
-func (e *errWithHeaders) GetHeaders() http.Header {
-	return e.headers
-}
-
-// ErrorWithHeaders wraps an error with additional headers to be sent to the
-// client. This is useful for e.g. caching, rate limiting, or other metadata.
-func ErrorWithHeaders(err error, headers http.Header) error {
-	var he HeadersError
-	if errors.As(err, &he) {
-		// There is already a headers error, so we need to merge the headers. This
-		// lets you chain multiple calls together and have all the headers set.
-		orig := he.GetHeaders()
-		for k, values := range headers {
-			for _, v := range values {
-				orig.Add(k, v)
-			}
-		}
-		return err
-	}
-	return &errWithHeaders{err: err, headers: headers}
 }
 
 // NewError creates a new instance of an error model with the given status code,
@@ -227,11 +170,12 @@ func ErrorWithHeaders(err error, headers http.Header) error {
 //			Errors:  errs,
 //		}
 //	}
-var NewError = func(status int, msg string, errs ...error) StatusError {
+var NewError = func(status int, msg string, errs ...error) *Problem {
 	details := make([]*ErrorDetail, len(errs))
 	for i := 0; i < len(errs); i++ {
-		if converted, ok := errs[i].(ErrorDetailer); ok {
-			details[i] = converted.ErrorDetail()
+		var ed *ErrorDetail
+		if errors.As(errs[i], &ed) {
+			details[i] = ed
 		} else {
 			if errs[i] == nil {
 				continue
@@ -249,94 +193,91 @@ var NewError = func(status int, msg string, errs ...error) StatusError {
 
 // Status304NotModified returns a 304. This is not really an error, but
 // provides a way to send non-default responses.
-func Status304NotModified() StatusError {
+func Status304NotModified() *Problem {
 	return NewError(http.StatusNotModified, "")
 }
 
 // Error400BadRequest returns a 400.
-func Error400BadRequest(msg string, errs ...error) StatusError {
+func Error400BadRequest(msg string, errs ...error) *Problem {
 	return NewError(http.StatusBadRequest, msg, errs...)
 }
 
 // Error401Unauthorized returns a 401.
-func Error401Unauthorized(msg string, errs ...error) StatusError {
+func Error401Unauthorized(msg string, errs ...error) *Problem {
 	return NewError(http.StatusUnauthorized, msg, errs...)
 }
 
 // Error403Forbidden returns a 403.
-func Error403Forbidden(msg string, errs ...error) StatusError {
+func Error403Forbidden(msg string, errs ...error) *Problem {
 	return NewError(http.StatusForbidden, msg, errs...)
 }
 
 // Error404NotFound returns a 404.
-func Error404NotFound(msg string, errs ...error) StatusError {
+func Error404NotFound(msg string, errs ...error) *Problem {
 	return NewError(http.StatusNotFound, msg, errs...)
 }
 
 // Error405MethodNotAllowed returns a 405.
-func Error405MethodNotAllowed(msg string, errs ...error) StatusError {
+func Error405MethodNotAllowed(msg string, errs ...error) *Problem {
 	return NewError(http.StatusMethodNotAllowed, msg, errs...)
 }
 
 // Error406NotAcceptable returns a 406.
-func Error406NotAcceptable(msg string, errs ...error) StatusError {
+func Error406NotAcceptable(msg string, errs ...error) *Problem {
 	return NewError(http.StatusNotAcceptable, msg, errs...)
 }
 
 // Error409Conflict returns a 409.
-func Error409Conflict(msg string, errs ...error) StatusError {
+func Error409Conflict(msg string, errs ...error) *Problem {
 	return NewError(http.StatusConflict, msg, errs...)
 }
 
 // Error410Gone returns a 410.
-func Error410Gone(msg string, errs ...error) StatusError {
+func Error410Gone(msg string, errs ...error) *Problem {
 	return NewError(http.StatusGone, msg, errs...)
 }
 
 // Error412PreconditionFailed returns a 412.
-func Error412PreconditionFailed(msg string, errs ...error) StatusError {
+func Error412PreconditionFailed(msg string, errs ...error) *Problem {
 	return NewError(http.StatusPreconditionFailed, msg, errs...)
 }
 
 // Error415UnsupportedMediaType returns a 415.
-func Error415UnsupportedMediaType(msg string, errs ...error) StatusError {
+func Error415UnsupportedMediaType(msg string, errs ...error) *Problem {
 	return NewError(http.StatusUnsupportedMediaType, msg, errs...)
 }
 
 // Error422UnprocessableEntity returns a 422.
-func Error422UnprocessableEntity(msg string, errs ...error) StatusError {
+func Error422UnprocessableEntity(msg string, errs ...error) *Problem {
 	return NewError(http.StatusUnprocessableEntity, msg, errs...)
 }
 
 // Error429TooManyRequests returns a 429.
-func Error429TooManyRequests(msg string, errs ...error) StatusError {
+func Error429TooManyRequests(msg string, errs ...error) *Problem {
 	return NewError(http.StatusTooManyRequests, msg, errs...)
 }
 
 // Error500InternalServerError returns a 500.
-func Error500InternalServerError(msg string, errs ...error) StatusError {
+func Error500InternalServerError(msg string, errs ...error) *Problem {
 	return NewError(http.StatusInternalServerError, msg, errs...)
 }
 
 // Error501NotImplemented returns a 501.
-func Error501NotImplemented(msg string, errs ...error) StatusError {
+func Error501NotImplemented(msg string, errs ...error) *Problem {
 	return NewError(http.StatusNotImplemented, msg, errs...)
 }
 
 // Error502BadGateway returns a 502.
-func Error502BadGateway(msg string, errs ...error) StatusError {
+func Error502BadGateway(msg string, errs ...error) *Problem {
 	return NewError(http.StatusBadGateway, msg, errs...)
 }
 
 // Error503ServiceUnavailable returns a 503.
-func Error503ServiceUnavailable(msg string, errs ...error) StatusError {
+func Error503ServiceUnavailable(msg string, errs ...error) *Problem {
 	return NewError(http.StatusServiceUnavailable, msg, errs...)
 }
 
 // Error504GatewayTimeout returns a 504.
-func Error504GatewayTimeout(msg string, errs ...error) StatusError {
+func Error504GatewayTimeout(msg string, errs ...error) *Problem {
 	return NewError(http.StatusGatewayTimeout, msg, errs...)
 }
-
-// ErrorFormatter is a function that formats an error message
-var ErrorFormatter = fmt.Sprintf

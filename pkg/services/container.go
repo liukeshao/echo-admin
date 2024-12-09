@@ -26,8 +26,10 @@ type Container struct {
 	Database *sql.DB
 	ORM      *ent.Client
 
-	Auth *AuthService
-	User *UserService
+	Auth    *AuthService
+	User    *UserService
+	Org     *OrgService
+	Cluster *ClusterService
 }
 
 // NewContainer creates and initializes a new Container
@@ -125,6 +127,8 @@ func (c *Container) initORM() {
 func (c *Container) initServices() {
 	c.User = NewUserService(c.ORM)
 	c.Auth = NewAuthService(c.Config)
+	c.Org = NewOrgService(c.ORM)
+	c.Cluster = NewClusterService(c.ORM)
 }
 
 // openDB opens a database connection

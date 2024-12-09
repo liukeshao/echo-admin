@@ -6,6 +6,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// Cluster is the predicate function for cluster builders.
+type Cluster func(*sql.Selector)
+
 // Org is the predicate function for org builders.
 type Org func(*sql.Selector)
 

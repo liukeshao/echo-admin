@@ -11,6 +11,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/liukeshao/echo-admin/ent/cluster"
 	"github.com/liukeshao/echo-admin/ent/org"
 	"github.com/liukeshao/echo-admin/ent/predicate"
 	"github.com/liukeshao/echo-admin/ent/role"
@@ -27,11 +28,851 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
+	TypeCluster     = "Cluster"
 	TypeOrg         = "Org"
 	TypeRole        = "Role"
 	TypeRoleBinding = "RoleBinding"
 	TypeUser        = "User"
 )
+
+// ClusterMutation represents an operation that mutates the Cluster nodes in the graph.
+type ClusterMutation struct {
+	config
+	op             Op
+	typ            string
+	id             *uint64
+	delete_time    *int64
+	adddelete_time *int64
+	create_time    *time.Time
+	update_time    *time.Time
+	org_id         *uint64
+	addorg_id      *int64
+	name           *string
+	display_name   *string
+	description    *string
+	_config        *string
+	clearedFields  map[string]struct{}
+	done           bool
+	oldValue       func(context.Context) (*Cluster, error)
+	predicates     []predicate.Cluster
+}
+
+var _ ent.Mutation = (*ClusterMutation)(nil)
+
+// clusterOption allows management of the mutation configuration using functional options.
+type clusterOption func(*ClusterMutation)
+
+// newClusterMutation creates new mutation for the Cluster entity.
+func newClusterMutation(c config, op Op, opts ...clusterOption) *ClusterMutation {
+	m := &ClusterMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeCluster,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withClusterID sets the ID field of the mutation.
+func withClusterID(id uint64) clusterOption {
+	return func(m *ClusterMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Cluster
+		)
+		m.oldValue = func(ctx context.Context) (*Cluster, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Cluster.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withCluster sets the old Cluster of the mutation.
+func withCluster(node *Cluster) clusterOption {
+	return func(m *ClusterMutation) {
+		m.oldValue = func(context.Context) (*Cluster, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ClusterMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ClusterMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Cluster entities.
+func (m *ClusterMutation) SetID(id uint64) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ClusterMutation) ID() (id uint64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *ClusterMutation) IDs(ctx context.Context) ([]uint64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uint64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Cluster.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetDeleteTime sets the "delete_time" field.
+func (m *ClusterMutation) SetDeleteTime(i int64) {
+	m.delete_time = &i
+	m.adddelete_time = nil
+}
+
+// DeleteTime returns the value of the "delete_time" field in the mutation.
+func (m *ClusterMutation) DeleteTime() (r int64, exists bool) {
+	v := m.delete_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeleteTime returns the old "delete_time" field's value of the Cluster entity.
+// If the Cluster object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ClusterMutation) OldDeleteTime(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeleteTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeleteTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeleteTime: %w", err)
+	}
+	return oldValue.DeleteTime, nil
+}
+
+// AddDeleteTime adds i to the "delete_time" field.
+func (m *ClusterMutation) AddDeleteTime(i int64) {
+	if m.adddelete_time != nil {
+		*m.adddelete_time += i
+	} else {
+		m.adddelete_time = &i
+	}
+}
+
+// AddedDeleteTime returns the value that was added to the "delete_time" field in this mutation.
+func (m *ClusterMutation) AddedDeleteTime() (r int64, exists bool) {
+	v := m.adddelete_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetDeleteTime resets all changes to the "delete_time" field.
+func (m *ClusterMutation) ResetDeleteTime() {
+	m.delete_time = nil
+	m.adddelete_time = nil
+}
+
+// SetCreateTime sets the "create_time" field.
+func (m *ClusterMutation) SetCreateTime(t time.Time) {
+	m.create_time = &t
+}
+
+// CreateTime returns the value of the "create_time" field in the mutation.
+func (m *ClusterMutation) CreateTime() (r time.Time, exists bool) {
+	v := m.create_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreateTime returns the old "create_time" field's value of the Cluster entity.
+// If the Cluster object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ClusterMutation) OldCreateTime(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreateTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreateTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreateTime: %w", err)
+	}
+	return oldValue.CreateTime, nil
+}
+
+// ResetCreateTime resets all changes to the "create_time" field.
+func (m *ClusterMutation) ResetCreateTime() {
+	m.create_time = nil
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (m *ClusterMutation) SetUpdateTime(t time.Time) {
+	m.update_time = &t
+}
+
+// UpdateTime returns the value of the "update_time" field in the mutation.
+func (m *ClusterMutation) UpdateTime() (r time.Time, exists bool) {
+	v := m.update_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdateTime returns the old "update_time" field's value of the Cluster entity.
+// If the Cluster object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ClusterMutation) OldUpdateTime(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdateTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdateTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdateTime: %w", err)
+	}
+	return oldValue.UpdateTime, nil
+}
+
+// ResetUpdateTime resets all changes to the "update_time" field.
+func (m *ClusterMutation) ResetUpdateTime() {
+	m.update_time = nil
+}
+
+// SetOrgID sets the "org_id" field.
+func (m *ClusterMutation) SetOrgID(u uint64) {
+	m.org_id = &u
+	m.addorg_id = nil
+}
+
+// OrgID returns the value of the "org_id" field in the mutation.
+func (m *ClusterMutation) OrgID() (r uint64, exists bool) {
+	v := m.org_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOrgID returns the old "org_id" field's value of the Cluster entity.
+// If the Cluster object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ClusterMutation) OldOrgID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOrgID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOrgID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOrgID: %w", err)
+	}
+	return oldValue.OrgID, nil
+}
+
+// AddOrgID adds u to the "org_id" field.
+func (m *ClusterMutation) AddOrgID(u int64) {
+	if m.addorg_id != nil {
+		*m.addorg_id += u
+	} else {
+		m.addorg_id = &u
+	}
+}
+
+// AddedOrgID returns the value that was added to the "org_id" field in this mutation.
+func (m *ClusterMutation) AddedOrgID() (r int64, exists bool) {
+	v := m.addorg_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetOrgID resets all changes to the "org_id" field.
+func (m *ClusterMutation) ResetOrgID() {
+	m.org_id = nil
+	m.addorg_id = nil
+}
+
+// SetName sets the "name" field.
+func (m *ClusterMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *ClusterMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the Cluster entity.
+// If the Cluster object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ClusterMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *ClusterMutation) ResetName() {
+	m.name = nil
+}
+
+// SetDisplayName sets the "display_name" field.
+func (m *ClusterMutation) SetDisplayName(s string) {
+	m.display_name = &s
+}
+
+// DisplayName returns the value of the "display_name" field in the mutation.
+func (m *ClusterMutation) DisplayName() (r string, exists bool) {
+	v := m.display_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDisplayName returns the old "display_name" field's value of the Cluster entity.
+// If the Cluster object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ClusterMutation) OldDisplayName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDisplayName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDisplayName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDisplayName: %w", err)
+	}
+	return oldValue.DisplayName, nil
+}
+
+// ClearDisplayName clears the value of the "display_name" field.
+func (m *ClusterMutation) ClearDisplayName() {
+	m.display_name = nil
+	m.clearedFields[cluster.FieldDisplayName] = struct{}{}
+}
+
+// DisplayNameCleared returns if the "display_name" field was cleared in this mutation.
+func (m *ClusterMutation) DisplayNameCleared() bool {
+	_, ok := m.clearedFields[cluster.FieldDisplayName]
+	return ok
+}
+
+// ResetDisplayName resets all changes to the "display_name" field.
+func (m *ClusterMutation) ResetDisplayName() {
+	m.display_name = nil
+	delete(m.clearedFields, cluster.FieldDisplayName)
+}
+
+// SetDescription sets the "description" field.
+func (m *ClusterMutation) SetDescription(s string) {
+	m.description = &s
+}
+
+// Description returns the value of the "description" field in the mutation.
+func (m *ClusterMutation) Description() (r string, exists bool) {
+	v := m.description
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDescription returns the old "description" field's value of the Cluster entity.
+// If the Cluster object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ClusterMutation) OldDescription(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDescription is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDescription requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDescription: %w", err)
+	}
+	return oldValue.Description, nil
+}
+
+// ClearDescription clears the value of the "description" field.
+func (m *ClusterMutation) ClearDescription() {
+	m.description = nil
+	m.clearedFields[cluster.FieldDescription] = struct{}{}
+}
+
+// DescriptionCleared returns if the "description" field was cleared in this mutation.
+func (m *ClusterMutation) DescriptionCleared() bool {
+	_, ok := m.clearedFields[cluster.FieldDescription]
+	return ok
+}
+
+// ResetDescription resets all changes to the "description" field.
+func (m *ClusterMutation) ResetDescription() {
+	m.description = nil
+	delete(m.clearedFields, cluster.FieldDescription)
+}
+
+// SetConfig sets the "config" field.
+func (m *ClusterMutation) SetConfig(s string) {
+	m._config = &s
+}
+
+// Config returns the value of the "config" field in the mutation.
+func (m *ClusterMutation) Config() (r string, exists bool) {
+	v := m._config
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldConfig returns the old "config" field's value of the Cluster entity.
+// If the Cluster object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ClusterMutation) OldConfig(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldConfig is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldConfig requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldConfig: %w", err)
+	}
+	return oldValue.Config, nil
+}
+
+// ClearConfig clears the value of the "config" field.
+func (m *ClusterMutation) ClearConfig() {
+	m._config = nil
+	m.clearedFields[cluster.FieldConfig] = struct{}{}
+}
+
+// ConfigCleared returns if the "config" field was cleared in this mutation.
+func (m *ClusterMutation) ConfigCleared() bool {
+	_, ok := m.clearedFields[cluster.FieldConfig]
+	return ok
+}
+
+// ResetConfig resets all changes to the "config" field.
+func (m *ClusterMutation) ResetConfig() {
+	m._config = nil
+	delete(m.clearedFields, cluster.FieldConfig)
+}
+
+// Where appends a list predicates to the ClusterMutation builder.
+func (m *ClusterMutation) Where(ps ...predicate.Cluster) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the ClusterMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *ClusterMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Cluster, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *ClusterMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *ClusterMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (Cluster).
+func (m *ClusterMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ClusterMutation) Fields() []string {
+	fields := make([]string, 0, 8)
+	if m.delete_time != nil {
+		fields = append(fields, cluster.FieldDeleteTime)
+	}
+	if m.create_time != nil {
+		fields = append(fields, cluster.FieldCreateTime)
+	}
+	if m.update_time != nil {
+		fields = append(fields, cluster.FieldUpdateTime)
+	}
+	if m.org_id != nil {
+		fields = append(fields, cluster.FieldOrgID)
+	}
+	if m.name != nil {
+		fields = append(fields, cluster.FieldName)
+	}
+	if m.display_name != nil {
+		fields = append(fields, cluster.FieldDisplayName)
+	}
+	if m.description != nil {
+		fields = append(fields, cluster.FieldDescription)
+	}
+	if m._config != nil {
+		fields = append(fields, cluster.FieldConfig)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ClusterMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case cluster.FieldDeleteTime:
+		return m.DeleteTime()
+	case cluster.FieldCreateTime:
+		return m.CreateTime()
+	case cluster.FieldUpdateTime:
+		return m.UpdateTime()
+	case cluster.FieldOrgID:
+		return m.OrgID()
+	case cluster.FieldName:
+		return m.Name()
+	case cluster.FieldDisplayName:
+		return m.DisplayName()
+	case cluster.FieldDescription:
+		return m.Description()
+	case cluster.FieldConfig:
+		return m.Config()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ClusterMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case cluster.FieldDeleteTime:
+		return m.OldDeleteTime(ctx)
+	case cluster.FieldCreateTime:
+		return m.OldCreateTime(ctx)
+	case cluster.FieldUpdateTime:
+		return m.OldUpdateTime(ctx)
+	case cluster.FieldOrgID:
+		return m.OldOrgID(ctx)
+	case cluster.FieldName:
+		return m.OldName(ctx)
+	case cluster.FieldDisplayName:
+		return m.OldDisplayName(ctx)
+	case cluster.FieldDescription:
+		return m.OldDescription(ctx)
+	case cluster.FieldConfig:
+		return m.OldConfig(ctx)
+	}
+	return nil, fmt.Errorf("unknown Cluster field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ClusterMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case cluster.FieldDeleteTime:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeleteTime(v)
+		return nil
+	case cluster.FieldCreateTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreateTime(v)
+		return nil
+	case cluster.FieldUpdateTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdateTime(v)
+		return nil
+	case cluster.FieldOrgID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOrgID(v)
+		return nil
+	case cluster.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case cluster.FieldDisplayName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDisplayName(v)
+		return nil
+	case cluster.FieldDescription:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDescription(v)
+		return nil
+	case cluster.FieldConfig:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetConfig(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Cluster field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ClusterMutation) AddedFields() []string {
+	var fields []string
+	if m.adddelete_time != nil {
+		fields = append(fields, cluster.FieldDeleteTime)
+	}
+	if m.addorg_id != nil {
+		fields = append(fields, cluster.FieldOrgID)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ClusterMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case cluster.FieldDeleteTime:
+		return m.AddedDeleteTime()
+	case cluster.FieldOrgID:
+		return m.AddedOrgID()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ClusterMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case cluster.FieldDeleteTime:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDeleteTime(v)
+		return nil
+	case cluster.FieldOrgID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddOrgID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Cluster numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ClusterMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(cluster.FieldDisplayName) {
+		fields = append(fields, cluster.FieldDisplayName)
+	}
+	if m.FieldCleared(cluster.FieldDescription) {
+		fields = append(fields, cluster.FieldDescription)
+	}
+	if m.FieldCleared(cluster.FieldConfig) {
+		fields = append(fields, cluster.FieldConfig)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ClusterMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ClusterMutation) ClearField(name string) error {
+	switch name {
+	case cluster.FieldDisplayName:
+		m.ClearDisplayName()
+		return nil
+	case cluster.FieldDescription:
+		m.ClearDescription()
+		return nil
+	case cluster.FieldConfig:
+		m.ClearConfig()
+		return nil
+	}
+	return fmt.Errorf("unknown Cluster nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ClusterMutation) ResetField(name string) error {
+	switch name {
+	case cluster.FieldDeleteTime:
+		m.ResetDeleteTime()
+		return nil
+	case cluster.FieldCreateTime:
+		m.ResetCreateTime()
+		return nil
+	case cluster.FieldUpdateTime:
+		m.ResetUpdateTime()
+		return nil
+	case cluster.FieldOrgID:
+		m.ResetOrgID()
+		return nil
+	case cluster.FieldName:
+		m.ResetName()
+		return nil
+	case cluster.FieldDisplayName:
+		m.ResetDisplayName()
+		return nil
+	case cluster.FieldDescription:
+		m.ResetDescription()
+		return nil
+	case cluster.FieldConfig:
+		m.ResetConfig()
+		return nil
+	}
+	return fmt.Errorf("unknown Cluster field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ClusterMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ClusterMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ClusterMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ClusterMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ClusterMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ClusterMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ClusterMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown Cluster unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ClusterMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown Cluster edge %s", name)
+}
 
 // OrgMutation represents an operation that mutates the Org nodes in the graph.
 type OrgMutation struct {

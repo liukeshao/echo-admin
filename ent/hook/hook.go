@@ -9,6 +9,18 @@ import (
 	"github.com/liukeshao/echo-admin/ent"
 )
 
+// The ClusterFunc type is an adapter to allow the use of ordinary
+// function as Cluster mutator.
+type ClusterFunc func(context.Context, *ent.ClusterMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ClusterFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ClusterMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ClusterMutation", m)
+}
+
 // The OrgFunc type is an adapter to allow the use of ordinary
 // function as Org mutator.
 type OrgFunc func(context.Context, *ent.OrgMutation) (ent.Value, error)

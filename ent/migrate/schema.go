@@ -9,6 +9,24 @@ import (
 )
 
 var (
+	// TotoroClusterColumns holds the columns for the "totoro_cluster" table.
+	TotoroClusterColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "delete_time", Type: field.TypeInt64, Default: 0},
+		{Name: "create_time", Type: field.TypeTime},
+		{Name: "update_time", Type: field.TypeTime},
+		{Name: "org_id", Type: field.TypeUint64},
+		{Name: "name", Type: field.TypeString, Size: 255},
+		{Name: "display_name", Type: field.TypeString, Nullable: true},
+		{Name: "description", Type: field.TypeString, Nullable: true},
+		{Name: "config", Type: field.TypeString, Nullable: true, Size: 2147483647},
+	}
+	// TotoroClusterTable holds the schema information for the "totoro_cluster" table.
+	TotoroClusterTable = &schema.Table{
+		Name:       "totoro_cluster",
+		Columns:    TotoroClusterColumns,
+		PrimaryKey: []*schema.Column{TotoroClusterColumns[0]},
+	}
 	// TotoroOrgColumns holds the columns for the "totoro_org" table.
 	TotoroOrgColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true},
@@ -93,6 +111,7 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		TotoroClusterTable,
 		TotoroOrgTable,
 		TotoroRoleTable,
 		TotoroRoleBindingTable,
@@ -101,6 +120,9 @@ var (
 )
 
 func init() {
+	TotoroClusterTable.Annotation = &entsql.Annotation{
+		Table: "totoro_cluster",
+	}
 	TotoroOrgTable.Annotation = &entsql.Annotation{
 		Table: "totoro_org",
 	}

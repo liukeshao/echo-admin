@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"github.com/joomcode/errorx"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -38,10 +39,10 @@ func (h *AccountHandler) Login(c echo.Context) error {
 
 	// Attempt to load the user
 	u, err := h.user.FindByEmail(c.Request().Context(), input.Email)
-	switch err.(type) {
-	case *ent.NotFoundError:
-		return echox.Error401Unauthorized("user not found")
-	case nil:
+	switch errorx.TraitSwitch(err, errorx.NotFound()) {
+	case errorx.NotFound():
+		return echox.Error401Unauthorized("user not found", err)
+	case errorx.CaseNoError():
 	default:
 		return echox.Error500InternalServerError("error querying user during login", err)
 	}

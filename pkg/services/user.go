@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"github.com/liukeshao/echo-admin/pkg/errors"
 	"strings"
 
 	"github.com/joomcode/errorx"
@@ -14,9 +15,7 @@ type UserService struct {
 }
 
 func NewUserService(orm *ent.Client) *UserService {
-	service := new(UserService)
-	service.orm = orm
-	return service
+	return &UserService{orm: orm}
 }
 
 func (s *UserService) FindById(ctx context.Context, id uint64) (*ent.User, error) {
@@ -33,7 +32,11 @@ func (s *UserService) FindByEmail(ctx context.Context, email string) (*ent.User,
 	u, err := s.orm.User.Query().
 		Where(user.Email(strings.ToLower(email))).
 		Only(ctx)
-	if err != nil {
+	switch err.(type) {
+	case *ent.NotFoundError:
+		return nil, errors.RecordNotFound.New(email)
+	case nil:
+	default:
 		return nil, errorx.Decorate(err, email)
 	}
 	return u, nil

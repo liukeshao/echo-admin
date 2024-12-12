@@ -14,9 +14,8 @@ func ProblemHandler(err error, c echo.Context) {
 	} else if errors.As(err, &he) {
 		problem = NewError(he.Code, fmt.Sprintf("%+v", he.Message), he)
 	} else {
-		problem = Error500InternalServerError("server internal error", err)
+		problem = Error500InternalServerError("server internal error")
 	}
-	log.Ctx(c).Error(problem.Error(), "errorDetails", problem.Errors)
 	err = c.JSON(problem.GetStatus(), problem)
 	if err != nil {
 		log.Ctx(c).Error("failed handle error", "error", err)

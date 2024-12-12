@@ -5,7 +5,6 @@ package runtime
 import (
 	"time"
 
-	"github.com/liukeshao/echo-admin/ent/cluster"
 	"github.com/liukeshao/echo-admin/ent/org"
 	"github.com/liukeshao/echo-admin/ent/role"
 	"github.com/liukeshao/echo-admin/ent/rolebinding"
@@ -17,39 +16,6 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
-	clusterMixin := schema.Cluster{}.Mixin()
-	clusterMixinHooks0 := clusterMixin[0].Hooks()
-	cluster.Hooks[0] = clusterMixinHooks0[0]
-	clusterMixinInters0 := clusterMixin[0].Interceptors()
-	cluster.Interceptors[0] = clusterMixinInters0[0]
-	clusterMixinFields0 := clusterMixin[0].Fields()
-	_ = clusterMixinFields0
-	clusterMixinFields1 := clusterMixin[1].Fields()
-	_ = clusterMixinFields1
-	clusterFields := schema.Cluster{}.Fields()
-	_ = clusterFields
-	// clusterDescDeleteTime is the schema descriptor for delete_time field.
-	clusterDescDeleteTime := clusterMixinFields0[0].Descriptor()
-	// cluster.DefaultDeleteTime holds the default value on creation for the delete_time field.
-	cluster.DefaultDeleteTime = clusterDescDeleteTime.Default.(int64)
-	// clusterDescCreateTime is the schema descriptor for create_time field.
-	clusterDescCreateTime := clusterMixinFields1[0].Descriptor()
-	// cluster.DefaultCreateTime holds the default value on creation for the create_time field.
-	cluster.DefaultCreateTime = clusterDescCreateTime.Default.(func() time.Time)
-	// clusterDescUpdateTime is the schema descriptor for update_time field.
-	clusterDescUpdateTime := clusterMixinFields1[1].Descriptor()
-	// cluster.DefaultUpdateTime holds the default value on creation for the update_time field.
-	cluster.DefaultUpdateTime = clusterDescUpdateTime.Default.(func() time.Time)
-	// cluster.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
-	cluster.UpdateDefaultUpdateTime = clusterDescUpdateTime.UpdateDefault.(func() time.Time)
-	// clusterDescName is the schema descriptor for name field.
-	clusterDescName := clusterFields[2].Descriptor()
-	// cluster.NameValidator is a validator for the "name" field. It is called by the builders before save.
-	cluster.NameValidator = clusterDescName.Validators[0].(func(string) error)
-	// clusterDescID is the schema descriptor for id field.
-	clusterDescID := clusterFields[0].Descriptor()
-	// cluster.DefaultID holds the default value on creation for the id field.
-	cluster.DefaultID = clusterDescID.Default.(func() uint64)
 	orgMixin := schema.Org{}.Mixin()
 	orgMixinHooks0 := orgMixin[0].Hooks()
 	org.Hooks[0] = orgMixinHooks0[0]

@@ -2,10 +2,9 @@ package services
 
 import (
 	"context"
-	"github.com/liukeshao/echo-admin/pkg/errors"
+	"fmt"
 	"strings"
 
-	"github.com/joomcode/errorx"
 	"github.com/liukeshao/echo-admin/ent"
 	"github.com/liukeshao/echo-admin/ent/user"
 )
@@ -32,12 +31,8 @@ func (s *UserService) FindByEmail(ctx context.Context, email string) (*ent.User,
 	u, err := s.orm.User.Query().
 		Where(user.Email(strings.ToLower(email))).
 		Only(ctx)
-	switch err.(type) {
-	case *ent.NotFoundError:
-		return nil, errors.RecordNotFound.New(email)
-	case nil:
-	default:
-		return nil, errorx.Decorate(err, email)
+	if err != nil {
+		return nil, fmt.Errorf("get user %s: %w", email, err)
 	}
 	return u, nil
 }
@@ -48,7 +43,7 @@ func (s *UserService) Create(ctx context.Context, email, password string) (*ent.
 		SetPassword(password).
 		Save(ctx)
 	if err != nil {
-		return nil, errorx.Decorate(err, "create user database failed")
+		return nil, fmt.Errorf("create user: %w", err)
 	}
 	return u, nil
 }

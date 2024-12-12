@@ -12,7 +12,6 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"github.com/liukeshao/echo-admin/ent/cluster"
 	"github.com/liukeshao/echo-admin/ent/org"
 	"github.com/liukeshao/echo-admin/ent/role"
 	"github.com/liukeshao/echo-admin/ent/rolebinding"
@@ -77,7 +76,6 @@ var (
 func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			cluster.Table:     cluster.ValidColumn,
 			org.Table:         org.ValidColumn,
 			role.Table:        role.ValidColumn,
 			rolebinding.Table: rolebinding.ValidColumn,

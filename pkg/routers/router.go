@@ -56,21 +56,5 @@ func (e *Endpoints) BuildRouter() error {
 		orgGroup.GET("/api/orgs/:orgID", nil).Name = "org.get"
 	}
 
-	// cluster
-	clusterGroup := strictAuth.Group("")
-	{
-		clusterGroup.POST("/api/clusters", nil).Name = "cluster.create"
-		clusterGroup.PUT("/api/clusters/:clusterName", nil).Name = "cluster.update"
-		clusterGroup.DELETE("/api/clusters/:clusterName", nil).Name = "cluster.delete"
-		clusterGroup.GET("/api/clusters", nil).Name = "cluster.list"
-		clusterGroup.GET("/api/clusters/:clusterName", nil).Name = "cluster.get"
-	}
-
-	// pipeline
-	pipelineGroup := strictAuth.Group("/api/pipelines")
-	{
-		pipelineGroup.POST("/:pipelineID/actions/run", nil)
-	}
-
 	return nil
 }

@@ -1,7 +1,8 @@
 package handlers
 
 import (
-	"github.com/joomcode/errorx"
+	"github.com/liukeshao/echo-admin/pkg/log"
+	"log/slog"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -39,12 +40,20 @@ func (h *AccountHandler) Login(c echo.Context) error {
 
 	// Attempt to load the user
 	u, err := h.user.FindByEmail(c.Request().Context(), input.Email)
-	switch errorx.TraitSwitch(err, errorx.NotFound()) {
-	case errorx.NotFound():
-		return echox.Error401Unauthorized("user not found", err)
-	case errorx.CaseNoError():
-	default:
-		return echox.Error500InternalServerError("error querying user during login", err)
+	switch {
+	// If the entity does not meet a specific condition,
+	// the operation will return an "ent.NotFoundError".
+	case ent.IsNotFound(err):
+		log.Ctx(c).Warn("user not found", slog.String("email", input.Email))
+		return echox.Error401Unauthorized("user not found")
+		// Any other error.
+	case err != nil:
+		log.Ctx(c).Error(
+			"error querying user during login",
+			slog.Any("input", input),
+			slog.Any("error", err),
+		)
+		return echox.Error500InternalServerError("error querying user during login")
 	}
 
 	// Check if the password is correct

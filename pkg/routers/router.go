@@ -1,7 +1,6 @@
 package routers
 
 import (
-	echojwt "github.com/labstack/echo-jwt/v4"
 	echomw "github.com/labstack/echo/v4/middleware"
 	_ "github.com/liukeshao/echo-admin/docs"
 	"github.com/liukeshao/echo-admin/pkg/echox"
@@ -30,8 +29,7 @@ func (e *Endpoints) BuildRouter() error {
 	// swagger
 	g.GET("/swagger/*", echoSwagger.WrapHandler)
 
-	jwtmw := echojwt.WithConfig(echojwt.Config{SigningKey: []byte(e.container.Config.App.EncryptionKey)})
-	strictAuth := g.Group("", jwtmw)
+	strictAuth := g.Group("", middleware.RequireAuthentication(e.container.Auth))
 	noAuth := g.Group("", middleware.RequireNoAuthentication())
 
 	accountNoAuthGroup := noAuth.Group("/account")

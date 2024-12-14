@@ -63,7 +63,7 @@ func (h *AccountHandler) Login(c echo.Context) error {
 	}
 
 	// Log the user in
-	token, err := h.auth.GenerateToken(u.ID)
+	token, err := h.auth.GenToken(u.ID)
 	if err != nil {
 		return echox.Error500InternalServerError("generate token error", err)
 	}
@@ -110,10 +110,7 @@ func (h *AccountHandler) Register(c echo.Context) error {
 // @Success 200 {object} ent.User
 // @Router /account/profile [get]
 func (h *AccountHandler) Profile(ctx echo.Context) error {
-	id, err := currentUserId(ctx)
-	if err != nil {
-		return echox.Error400BadRequest("invalid user id", err)
-	}
+	id := currentUserId(ctx)
 	user, err := h.user.FindById(ctx.Request().Context(), id)
 	switch err.(type) {
 	case *ent.NotFoundError:

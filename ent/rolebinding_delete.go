@@ -40,7 +40,7 @@ func (rbd *RoleBindingDelete) ExecX(ctx context.Context) int {
 }
 
 func (rbd *RoleBindingDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(rolebinding.Table, sqlgraph.NewFieldSpec(rolebinding.FieldID, field.TypeInt64))
+	_spec := sqlgraph.NewDeleteSpec(rolebinding.Table, sqlgraph.NewFieldSpec(rolebinding.FieldID, field.TypeString))
 	if ps := rbd.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

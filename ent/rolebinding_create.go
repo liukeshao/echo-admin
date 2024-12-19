@@ -109,8 +109,16 @@ func (rbc *RoleBindingCreate) SetNillableDeletedTime(i *int64) *RoleBindingCreat
 }
 
 // SetID sets the "id" field.
-func (rbc *RoleBindingCreate) SetID(i int64) *RoleBindingCreate {
-	rbc.mutation.SetID(i)
+func (rbc *RoleBindingCreate) SetID(s string) *RoleBindingCreate {
+	rbc.mutation.SetID(s)
+	return rbc
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (rbc *RoleBindingCreate) SetNillableID(s *string) *RoleBindingCreate {
+	if s != nil {
+		rbc.SetID(*s)
+	}
 	return rbc
 }
 
@@ -169,6 +177,13 @@ func (rbc *RoleBindingCreate) defaults() error {
 		v := rolebinding.DefaultUpdateTime()
 		rbc.mutation.SetUpdateTime(v)
 	}
+	if _, ok := rbc.mutation.ID(); !ok {
+		if rolebinding.DefaultID == nil {
+			return fmt.Errorf("ent: uninitialized rolebinding.DefaultID (forgotten import ent/runtime?)")
+		}
+		v := rolebinding.DefaultID()
+		rbc.mutation.SetID(v)
+	}
 	return nil
 }
 
@@ -206,9 +221,12 @@ func (rbc *RoleBindingCreate) sqlSave(ctx context.Context) (*RoleBinding, error)
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != _node.ID {
-		id := _spec.ID.Value.(int64)
-		_node.ID = int64(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(string); ok {
+			_node.ID = id
+		} else {
+			return nil, fmt.Errorf("unexpected RoleBinding.ID type: %T", _spec.ID.Value)
+		}
 	}
 	rbc.mutation.id = &_node.ID
 	rbc.mutation.done = true
@@ -218,7 +236,7 @@ func (rbc *RoleBindingCreate) sqlSave(ctx context.Context) (*RoleBinding, error)
 func (rbc *RoleBindingCreate) createSpec() (*RoleBinding, *sqlgraph.CreateSpec) {
 	var (
 		_node = &RoleBinding{config: rbc.config}
-		_spec = sqlgraph.NewCreateSpec(rolebinding.Table, sqlgraph.NewFieldSpec(rolebinding.FieldID, field.TypeInt64))
+		_spec = sqlgraph.NewCreateSpec(rolebinding.Table, sqlgraph.NewFieldSpec(rolebinding.FieldID, field.TypeString))
 	)
 	if id, ok := rbc.mutation.ID(); ok {
 		_node.ID = id
@@ -304,10 +322,6 @@ func (rbcb *RoleBindingCreateBulk) Save(ctx context.Context) ([]*RoleBinding, er
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int64(id)
-				}
 				mutation.done = true
 				return nodes[i], nil
 			})

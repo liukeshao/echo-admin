@@ -32,31 +32,35 @@ func init() {
 	// org.DefaultDeleteTime holds the default value on creation for the delete_time field.
 	org.DefaultDeleteTime = orgDescDeleteTime.Default.(int64)
 	// orgDescCreateTime is the schema descriptor for create_time field.
-	orgDescCreateTime := orgMixinFields1[0].Descriptor()
+	orgDescCreateTime := orgMixinFields1[1].Descriptor()
 	// org.DefaultCreateTime holds the default value on creation for the create_time field.
 	org.DefaultCreateTime = orgDescCreateTime.Default.(func() time.Time)
 	// orgDescUpdateTime is the schema descriptor for update_time field.
-	orgDescUpdateTime := orgMixinFields1[1].Descriptor()
+	orgDescUpdateTime := orgMixinFields1[2].Descriptor()
 	// org.DefaultUpdateTime holds the default value on creation for the update_time field.
 	org.DefaultUpdateTime = orgDescUpdateTime.Default.(func() time.Time)
 	// org.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
 	org.UpdateDefaultUpdateTime = orgDescUpdateTime.UpdateDefault.(func() time.Time)
 	// orgDescName is the schema descriptor for name field.
-	orgDescName := orgFields[1].Descriptor()
+	orgDescName := orgFields[0].Descriptor()
 	// org.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	org.NameValidator = orgDescName.Validators[0].(func(string) error)
 	// orgDescLogo is the schema descriptor for logo field.
-	orgDescLogo := orgFields[4].Descriptor()
+	orgDescLogo := orgFields[3].Descriptor()
 	// org.LogoValidator is a validator for the "logo" field. It is called by the builders before save.
 	org.LogoValidator = orgDescLogo.Validators[0].(func(string) error)
 	// orgDescStatus is the schema descriptor for status field.
-	orgDescStatus := orgFields[5].Descriptor()
+	orgDescStatus := orgFields[4].Descriptor()
 	// org.StatusValidator is a validator for the "status" field. It is called by the builders before save.
 	org.StatusValidator = orgDescStatus.Validators[0].(func(string) error)
 	// orgDescType is the schema descriptor for type field.
-	orgDescType := orgFields[6].Descriptor()
+	orgDescType := orgFields[5].Descriptor()
 	// org.TypeValidator is a validator for the "type" field. It is called by the builders before save.
 	org.TypeValidator = orgDescType.Validators[0].(func(string) error)
+	// orgDescID is the schema descriptor for id field.
+	orgDescID := orgMixinFields1[0].Descriptor()
+	// org.DefaultID holds the default value on creation for the id field.
+	org.DefaultID = orgDescID.Default.(func() string)
 	roleMixin := schema.Role{}.Mixin()
 	roleMixinHooks0 := roleMixin[0].Hooks()
 	role.Hooks[0] = roleMixinHooks0[0]
@@ -73,15 +77,19 @@ func init() {
 	// role.DefaultDeleteTime holds the default value on creation for the delete_time field.
 	role.DefaultDeleteTime = roleDescDeleteTime.Default.(int64)
 	// roleDescCreateTime is the schema descriptor for create_time field.
-	roleDescCreateTime := roleMixinFields1[0].Descriptor()
+	roleDescCreateTime := roleMixinFields1[1].Descriptor()
 	// role.DefaultCreateTime holds the default value on creation for the create_time field.
 	role.DefaultCreateTime = roleDescCreateTime.Default.(func() time.Time)
 	// roleDescUpdateTime is the schema descriptor for update_time field.
-	roleDescUpdateTime := roleMixinFields1[1].Descriptor()
+	roleDescUpdateTime := roleMixinFields1[2].Descriptor()
 	// role.DefaultUpdateTime holds the default value on creation for the update_time field.
 	role.DefaultUpdateTime = roleDescUpdateTime.Default.(func() time.Time)
 	// role.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
 	role.UpdateDefaultUpdateTime = roleDescUpdateTime.UpdateDefault.(func() time.Time)
+	// roleDescID is the schema descriptor for id field.
+	roleDescID := roleMixinFields1[0].Descriptor()
+	// role.DefaultID holds the default value on creation for the id field.
+	role.DefaultID = roleDescID.Default.(func() string)
 	rolebindingMixin := schema.RoleBinding{}.Mixin()
 	rolebindingMixinHooks0 := rolebindingMixin[0].Hooks()
 	rolebinding.Hooks[0] = rolebindingMixinHooks0[0]
@@ -98,15 +106,19 @@ func init() {
 	// rolebinding.DefaultDeleteTime holds the default value on creation for the delete_time field.
 	rolebinding.DefaultDeleteTime = rolebindingDescDeleteTime.Default.(int64)
 	// rolebindingDescCreateTime is the schema descriptor for create_time field.
-	rolebindingDescCreateTime := rolebindingMixinFields1[0].Descriptor()
+	rolebindingDescCreateTime := rolebindingMixinFields1[1].Descriptor()
 	// rolebinding.DefaultCreateTime holds the default value on creation for the create_time field.
 	rolebinding.DefaultCreateTime = rolebindingDescCreateTime.Default.(func() time.Time)
 	// rolebindingDescUpdateTime is the schema descriptor for update_time field.
-	rolebindingDescUpdateTime := rolebindingMixinFields1[1].Descriptor()
+	rolebindingDescUpdateTime := rolebindingMixinFields1[2].Descriptor()
 	// rolebinding.DefaultUpdateTime holds the default value on creation for the update_time field.
 	rolebinding.DefaultUpdateTime = rolebindingDescUpdateTime.Default.(func() time.Time)
 	// rolebinding.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
 	rolebinding.UpdateDefaultUpdateTime = rolebindingDescUpdateTime.UpdateDefault.(func() time.Time)
+	// rolebindingDescID is the schema descriptor for id field.
+	rolebindingDescID := rolebindingMixinFields1[0].Descriptor()
+	// rolebinding.DefaultID holds the default value on creation for the id field.
+	rolebinding.DefaultID = rolebindingDescID.Default.(func() string)
 	userMixin := schema.User{}.Mixin()
 	userMixinHooks0 := userMixin[0].Hooks()
 	userHooks := schema.User{}.Hooks()
@@ -125,27 +137,27 @@ func init() {
 	// user.DefaultDeleteTime holds the default value on creation for the delete_time field.
 	user.DefaultDeleteTime = userDescDeleteTime.Default.(int64)
 	// userDescCreateTime is the schema descriptor for create_time field.
-	userDescCreateTime := userMixinFields1[0].Descriptor()
+	userDescCreateTime := userMixinFields1[1].Descriptor()
 	// user.DefaultCreateTime holds the default value on creation for the create_time field.
 	user.DefaultCreateTime = userDescCreateTime.Default.(func() time.Time)
 	// userDescUpdateTime is the schema descriptor for update_time field.
-	userDescUpdateTime := userMixinFields1[1].Descriptor()
+	userDescUpdateTime := userMixinFields1[2].Descriptor()
 	// user.DefaultUpdateTime holds the default value on creation for the update_time field.
 	user.DefaultUpdateTime = userDescUpdateTime.Default.(func() time.Time)
 	// user.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
 	user.UpdateDefaultUpdateTime = userDescUpdateTime.UpdateDefault.(func() time.Time)
 	// userDescGender is the schema descriptor for gender field.
-	userDescGender := userFields[5].Descriptor()
+	userDescGender := userFields[4].Descriptor()
 	// user.DefaultGender holds the default value on creation for the gender field.
 	user.DefaultGender = userDescGender.Default.(string)
 	// userDescNonLocked is the schema descriptor for non_locked field.
-	userDescNonLocked := userFields[8].Descriptor()
+	userDescNonLocked := userFields[7].Descriptor()
 	// user.DefaultNonLocked holds the default value on creation for the non_locked field.
 	user.DefaultNonLocked = userDescNonLocked.Default.(int)
 	// userDescID is the schema descriptor for id field.
-	userDescID := userFields[0].Descriptor()
+	userDescID := userMixinFields1[0].Descriptor()
 	// user.DefaultID holds the default value on creation for the id field.
-	user.DefaultID = userDescID.Default.(func() uint64)
+	user.DefaultID = userDescID.Default.(func() string)
 }
 
 const (

@@ -11,7 +11,7 @@ require (
 	github.com/labstack/echo/v4 v4.13.2
 	github.com/mattn/go-sqlite3 v1.14.24
 	github.com/maypok86/otter v1.2.4
-	github.com/sony/sonyflake v1.2.0
+	github.com/oklog/ulid/v2 v2.1.0
 	github.com/spf13/viper v1.19.0
 	github.com/stretchr/testify v1.10.0
 	github.com/swaggo/echo-swagger v1.4.1

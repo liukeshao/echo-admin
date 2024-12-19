@@ -115,8 +115,16 @@ func (oc *OrgCreate) SetType(s string) *OrgCreate {
 }
 
 // SetID sets the "id" field.
-func (oc *OrgCreate) SetID(i int64) *OrgCreate {
-	oc.mutation.SetID(i)
+func (oc *OrgCreate) SetID(s string) *OrgCreate {
+	oc.mutation.SetID(s)
+	return oc
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (oc *OrgCreate) SetNillableID(s *string) *OrgCreate {
+	if s != nil {
+		oc.SetID(*s)
+	}
 	return oc
 }
 
@@ -174,6 +182,13 @@ func (oc *OrgCreate) defaults() error {
 		}
 		v := org.DefaultUpdateTime()
 		oc.mutation.SetUpdateTime(v)
+	}
+	if _, ok := oc.mutation.ID(); !ok {
+		if org.DefaultID == nil {
+			return fmt.Errorf("ent: uninitialized org.DefaultID (forgotten import ent/runtime?)")
+		}
+		v := org.DefaultID()
+		oc.mutation.SetID(v)
 	}
 	return nil
 }
@@ -235,9 +250,12 @@ func (oc *OrgCreate) sqlSave(ctx context.Context) (*Org, error) {
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != _node.ID {
-		id := _spec.ID.Value.(int64)
-		_node.ID = int64(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(string); ok {
+			_node.ID = id
+		} else {
+			return nil, fmt.Errorf("unexpected Org.ID type: %T", _spec.ID.Value)
+		}
 	}
 	oc.mutation.id = &_node.ID
 	oc.mutation.done = true
@@ -247,7 +265,7 @@ func (oc *OrgCreate) sqlSave(ctx context.Context) (*Org, error) {
 func (oc *OrgCreate) createSpec() (*Org, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Org{config: oc.config}
-		_spec = sqlgraph.NewCreateSpec(org.Table, sqlgraph.NewFieldSpec(org.FieldID, field.TypeInt64))
+		_spec = sqlgraph.NewCreateSpec(org.Table, sqlgraph.NewFieldSpec(org.FieldID, field.TypeString))
 	)
 	if id, ok := oc.mutation.ID(); ok {
 		_node.ID = id
@@ -337,10 +355,6 @@ func (ocb *OrgCreateBulk) Save(ctx context.Context) ([]*Org, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int64(id)
-				}
 				mutation.done = true
 				return nodes[i], nil
 			})

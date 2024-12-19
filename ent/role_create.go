@@ -103,8 +103,16 @@ func (rc *RoleCreate) SetDeletedTime(i int64) *RoleCreate {
 }
 
 // SetID sets the "id" field.
-func (rc *RoleCreate) SetID(i int64) *RoleCreate {
-	rc.mutation.SetID(i)
+func (rc *RoleCreate) SetID(s string) *RoleCreate {
+	rc.mutation.SetID(s)
+	return rc
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (rc *RoleCreate) SetNillableID(s *string) *RoleCreate {
+	if s != nil {
+		rc.SetID(*s)
+	}
 	return rc
 }
 
@@ -163,6 +171,13 @@ func (rc *RoleCreate) defaults() error {
 		v := role.DefaultUpdateTime()
 		rc.mutation.SetUpdateTime(v)
 	}
+	if _, ok := rc.mutation.ID(); !ok {
+		if role.DefaultID == nil {
+			return fmt.Errorf("ent: uninitialized role.DefaultID (forgotten import ent/runtime?)")
+		}
+		v := role.DefaultID()
+		rc.mutation.SetID(v)
+	}
 	return nil
 }
 
@@ -197,9 +212,12 @@ func (rc *RoleCreate) sqlSave(ctx context.Context) (*Role, error) {
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != _node.ID {
-		id := _spec.ID.Value.(int64)
-		_node.ID = int64(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(string); ok {
+			_node.ID = id
+		} else {
+			return nil, fmt.Errorf("unexpected Role.ID type: %T", _spec.ID.Value)
+		}
 	}
 	rc.mutation.id = &_node.ID
 	rc.mutation.done = true
@@ -209,7 +227,7 @@ func (rc *RoleCreate) sqlSave(ctx context.Context) (*Role, error) {
 func (rc *RoleCreate) createSpec() (*Role, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Role{config: rc.config}
-		_spec = sqlgraph.NewCreateSpec(role.Table, sqlgraph.NewFieldSpec(role.FieldID, field.TypeInt64))
+		_spec = sqlgraph.NewCreateSpec(role.Table, sqlgraph.NewFieldSpec(role.FieldID, field.TypeString))
 	)
 	if id, ok := rc.mutation.ID(); ok {
 		_node.ID = id
@@ -291,10 +309,6 @@ func (rcb *RoleCreateBulk) Save(ctx context.Context) ([]*Role, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int64(id)
-				}
 				mutation.done = true
 				return nodes[i], nil
 			})

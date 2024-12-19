@@ -227,7 +227,7 @@ func (ou *OrgUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if err := ou.check(); err != nil {
 		return n, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(org.Table, org.Columns, sqlgraph.NewFieldSpec(org.FieldID, field.TypeInt64))
+	_spec := sqlgraph.NewUpdateSpec(org.Table, org.Columns, sqlgraph.NewFieldSpec(org.FieldID, field.TypeString))
 	if ps := ou.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -500,7 +500,7 @@ func (ouo *OrgUpdateOne) sqlSave(ctx context.Context) (_node *Org, err error) {
 	if err := ouo.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(org.Table, org.Columns, sqlgraph.NewFieldSpec(org.FieldID, field.TypeInt64))
+	_spec := sqlgraph.NewUpdateSpec(org.Table, org.Columns, sqlgraph.NewFieldSpec(org.FieldID, field.TypeString))
 	id, ok := ouo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Org.id" for update`)}

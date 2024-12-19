@@ -40,7 +40,7 @@ func (od *OrgDelete) ExecX(ctx context.Context) int {
 }
 
 func (od *OrgDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(org.Table, sqlgraph.NewFieldSpec(org.FieldID, field.TypeInt64))
+	_spec := sqlgraph.NewDeleteSpec(org.Table, sqlgraph.NewFieldSpec(org.FieldID, field.TypeString))
 	if ps := od.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

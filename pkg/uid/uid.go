@@ -1,15 +1,10 @@
 package uid
 
 import (
-	"github.com/sony/sonyflake"
+	"github.com/oklog/ulid/v2"
 )
 
-var sf *sonyflake.Sonyflake
-
-func init() {
-	sf = sonyflake.NewSonyflake(sonyflake.Settings{})
-}
-
-func GenUint64() (uint64, error) {
-	return sf.NextID()
+// ULID https://github.com/ulid/spec
+func ULID() string {
+	return ulid.Make().String()
 }

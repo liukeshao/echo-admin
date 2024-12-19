@@ -87,7 +87,7 @@ var (
 	// DefaultNonLocked holds the default value on creation for the "non_locked" field.
 	DefaultNonLocked int
 	// DefaultID holds the default value on creation for the "id" field.
-	DefaultID func() uint64
+	DefaultID func() string
 )
 
 // OrderOption defines the ordering options for the User queries.

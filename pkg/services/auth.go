@@ -38,7 +38,7 @@ func (s *AuthService) CheckPassword(password, hash string) error {
 
 // GenToken generates a token for a user id using JWT which
 // is set to expire based on the duration stored in configuration
-func (s *AuthService) GenToken(userId uint64) (string, error) {
+func (s *AuthService) GenToken(userId string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, types.MyCustomClaims{
 		UserId: userId,
 		RegisteredClaims: jwt.RegisteredClaims{

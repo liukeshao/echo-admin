@@ -13,7 +13,6 @@ type Org struct {
 
 func (Org) Fields() []ent.Field {
 	return []ent.Field{
-		field.Int64("id").Comment("主键"),
 		field.String("name").MaxLen(255).Comment("组织名称"),
 		field.String("display_name").Optional().Comment("显示名称"),
 		field.String("description").Optional().Comment("描述"),
@@ -26,7 +25,7 @@ func (Org) Fields() []ent.Field {
 func (Org) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		SoftDeleteMixin{},
-		TimeMixin{},
+		BaseFiledMixin{},
 	}
 }
 

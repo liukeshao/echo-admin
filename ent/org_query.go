@@ -82,8 +82,8 @@ func (oq *OrgQuery) FirstX(ctx context.Context) *Org {
 
 // FirstID returns the first Org ID from the query.
 // Returns a *NotFoundError when no Org ID was found.
-func (oq *OrgQuery) FirstID(ctx context.Context) (id int64, err error) {
-	var ids []int64
+func (oq *OrgQuery) FirstID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = oq.Limit(1).IDs(setContextOp(ctx, oq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
@@ -95,7 +95,7 @@ func (oq *OrgQuery) FirstID(ctx context.Context) (id int64, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (oq *OrgQuery) FirstIDX(ctx context.Context) int64 {
+func (oq *OrgQuery) FirstIDX(ctx context.Context) string {
 	id, err := oq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -133,8 +133,8 @@ func (oq *OrgQuery) OnlyX(ctx context.Context) *Org {
 // OnlyID is like Only, but returns the only Org ID in the query.
 // Returns a *NotSingularError when more than one Org ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (oq *OrgQuery) OnlyID(ctx context.Context) (id int64, err error) {
-	var ids []int64
+func (oq *OrgQuery) OnlyID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = oq.Limit(2).IDs(setContextOp(ctx, oq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
@@ -150,7 +150,7 @@ func (oq *OrgQuery) OnlyID(ctx context.Context) (id int64, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (oq *OrgQuery) OnlyIDX(ctx context.Context) int64 {
+func (oq *OrgQuery) OnlyIDX(ctx context.Context) string {
 	id, err := oq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -178,7 +178,7 @@ func (oq *OrgQuery) AllX(ctx context.Context) []*Org {
 }
 
 // IDs executes the query and returns a list of Org IDs.
-func (oq *OrgQuery) IDs(ctx context.Context) (ids []int64, err error) {
+func (oq *OrgQuery) IDs(ctx context.Context) (ids []string, err error) {
 	if oq.ctx.Unique == nil && oq.path != nil {
 		oq.Unique(true)
 	}
@@ -190,7 +190,7 @@ func (oq *OrgQuery) IDs(ctx context.Context) (ids []int64, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (oq *OrgQuery) IDsX(ctx context.Context) []int64 {
+func (oq *OrgQuery) IDsX(ctx context.Context) []string {
 	ids, err := oq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -365,7 +365,7 @@ func (oq *OrgQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (oq *OrgQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(org.Table, org.Columns, sqlgraph.NewFieldSpec(org.FieldID, field.TypeInt64))
+	_spec := sqlgraph.NewQuerySpec(org.Table, org.Columns, sqlgraph.NewFieldSpec(org.FieldID, field.TypeString))
 	_spec.From = oq.sql
 	if unique := oq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

@@ -18,7 +18,6 @@ type User struct {
 
 func (User) Fields() []ent.Field {
 	return []ent.Field{
-		field.Uint64("id").DefaultFunc(IdGenerator).Comment("用户ID"),
 		field.String("name").Optional().Comment("用户账号"),
 		field.String("display_name").Optional().Comment("显示名称"),
 		field.String("email").Optional().Comment("用户邮箱"),
@@ -32,7 +31,7 @@ func (User) Fields() []ent.Field {
 func (User) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		SoftDeleteMixin{},
-		TimeMixin{},
+		BaseFiledMixin{},
 	}
 }
 

@@ -13,7 +13,6 @@ type Role struct {
 
 func (Role) Fields() []ent.Field {
 	return []ent.Field{
-		field.Int64("id").Comment("主键"),
 		field.String("name").Comment("角色名称"),
 		field.String("display_name").Optional().Comment("角色显示名称"),
 		field.String("remark").Optional().Comment("角色描述"),
@@ -24,7 +23,7 @@ func (Role) Fields() []ent.Field {
 func (Role) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		SoftDeleteMixin{},
-		TimeMixin{},
+		BaseFiledMixin{},
 	}
 }
 

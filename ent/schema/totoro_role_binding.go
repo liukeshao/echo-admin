@@ -13,7 +13,6 @@ type RoleBinding struct {
 
 func (RoleBinding) Fields() []ent.Field {
 	return []ent.Field{
-		field.Int64("id"),
 		field.String("name").Comment("角色名称"),
 		field.String("display_name").Optional().Comment("角色显示名称"),
 		field.String("role_name").Comment("角色名称"),
@@ -25,7 +24,7 @@ func (RoleBinding) Fields() []ent.Field {
 func (RoleBinding) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		SoftDeleteMixin{},
-		TimeMixin{},
+		BaseFiledMixin{},
 	}
 }
 func (RoleBinding) Edges() []ent.Edge {

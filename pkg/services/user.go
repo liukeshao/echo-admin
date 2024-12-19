@@ -17,7 +17,7 @@ func NewUserService(orm *ent.Client) *UserService {
 	return &UserService{orm: orm}
 }
 
-func (s *UserService) FindById(ctx context.Context, id uint64) (*ent.User, error) {
+func (s *UserService) FindById(ctx context.Context, id string) (*ent.User, error) {
 	u, err := s.orm.User.Query().
 		Where(user.ID(id)).
 		Only(ctx)

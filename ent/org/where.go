@@ -10,48 +10,58 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id int64) predicate.Org {
+func ID(id string) predicate.Org {
 	return predicate.Org(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id int64) predicate.Org {
+func IDEQ(id string) predicate.Org {
 	return predicate.Org(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id int64) predicate.Org {
+func IDNEQ(id string) predicate.Org {
 	return predicate.Org(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...int64) predicate.Org {
+func IDIn(ids ...string) predicate.Org {
 	return predicate.Org(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...int64) predicate.Org {
+func IDNotIn(ids ...string) predicate.Org {
 	return predicate.Org(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id int64) predicate.Org {
+func IDGT(id string) predicate.Org {
 	return predicate.Org(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id int64) predicate.Org {
+func IDGTE(id string) predicate.Org {
 	return predicate.Org(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id int64) predicate.Org {
+func IDLT(id string) predicate.Org {
 	return predicate.Org(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id int64) predicate.Org {
+func IDLTE(id string) predicate.Org {
 	return predicate.Org(sql.FieldLTE(FieldID, id))
+}
+
+// IDEqualFold applies the EqualFold predicate on the ID field.
+func IDEqualFold(id string) predicate.Org {
+	return predicate.Org(sql.FieldEqualFold(FieldID, id))
+}
+
+// IDContainsFold applies the ContainsFold predicate on the ID field.
+func IDContainsFold(id string) predicate.Org {
+	return predicate.Org(sql.FieldContainsFold(FieldID, id))
 }
 
 // DeleteTime applies equality check predicate on the "delete_time" field. It's identical to DeleteTimeEQ.

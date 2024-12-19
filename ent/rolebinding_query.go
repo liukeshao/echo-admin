@@ -82,8 +82,8 @@ func (rbq *RoleBindingQuery) FirstX(ctx context.Context) *RoleBinding {
 
 // FirstID returns the first RoleBinding ID from the query.
 // Returns a *NotFoundError when no RoleBinding ID was found.
-func (rbq *RoleBindingQuery) FirstID(ctx context.Context) (id int64, err error) {
-	var ids []int64
+func (rbq *RoleBindingQuery) FirstID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = rbq.Limit(1).IDs(setContextOp(ctx, rbq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
@@ -95,7 +95,7 @@ func (rbq *RoleBindingQuery) FirstID(ctx context.Context) (id int64, err error) 
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (rbq *RoleBindingQuery) FirstIDX(ctx context.Context) int64 {
+func (rbq *RoleBindingQuery) FirstIDX(ctx context.Context) string {
 	id, err := rbq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -133,8 +133,8 @@ func (rbq *RoleBindingQuery) OnlyX(ctx context.Context) *RoleBinding {
 // OnlyID is like Only, but returns the only RoleBinding ID in the query.
 // Returns a *NotSingularError when more than one RoleBinding ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (rbq *RoleBindingQuery) OnlyID(ctx context.Context) (id int64, err error) {
-	var ids []int64
+func (rbq *RoleBindingQuery) OnlyID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = rbq.Limit(2).IDs(setContextOp(ctx, rbq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
@@ -150,7 +150,7 @@ func (rbq *RoleBindingQuery) OnlyID(ctx context.Context) (id int64, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (rbq *RoleBindingQuery) OnlyIDX(ctx context.Context) int64 {
+func (rbq *RoleBindingQuery) OnlyIDX(ctx context.Context) string {
 	id, err := rbq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -178,7 +178,7 @@ func (rbq *RoleBindingQuery) AllX(ctx context.Context) []*RoleBinding {
 }
 
 // IDs executes the query and returns a list of RoleBinding IDs.
-func (rbq *RoleBindingQuery) IDs(ctx context.Context) (ids []int64, err error) {
+func (rbq *RoleBindingQuery) IDs(ctx context.Context) (ids []string, err error) {
 	if rbq.ctx.Unique == nil && rbq.path != nil {
 		rbq.Unique(true)
 	}
@@ -190,7 +190,7 @@ func (rbq *RoleBindingQuery) IDs(ctx context.Context) (ids []int64, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (rbq *RoleBindingQuery) IDsX(ctx context.Context) []int64 {
+func (rbq *RoleBindingQuery) IDsX(ctx context.Context) []string {
 	ids, err := rbq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -365,7 +365,7 @@ func (rbq *RoleBindingQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (rbq *RoleBindingQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(rolebinding.Table, rolebinding.Columns, sqlgraph.NewFieldSpec(rolebinding.FieldID, field.TypeInt64))
+	_spec := sqlgraph.NewQuerySpec(rolebinding.Table, rolebinding.Columns, sqlgraph.NewFieldSpec(rolebinding.FieldID, field.TypeString))
 	_spec.From = rbq.sql
 	if unique := rbq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

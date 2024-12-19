@@ -192,7 +192,7 @@ func (rbu *RoleBindingUpdate) defaults() error {
 }
 
 func (rbu *RoleBindingUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	_spec := sqlgraph.NewUpdateSpec(rolebinding.Table, rolebinding.Columns, sqlgraph.NewFieldSpec(rolebinding.FieldID, field.TypeInt64))
+	_spec := sqlgraph.NewUpdateSpec(rolebinding.Table, rolebinding.Columns, sqlgraph.NewFieldSpec(rolebinding.FieldID, field.TypeString))
 	if ps := rbu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -430,7 +430,7 @@ func (rbuo *RoleBindingUpdateOne) defaults() error {
 }
 
 func (rbuo *RoleBindingUpdateOne) sqlSave(ctx context.Context) (_node *RoleBinding, err error) {
-	_spec := sqlgraph.NewUpdateSpec(rolebinding.Table, rolebinding.Columns, sqlgraph.NewFieldSpec(rolebinding.FieldID, field.TypeInt64))
+	_spec := sqlgraph.NewUpdateSpec(rolebinding.Table, rolebinding.Columns, sqlgraph.NewFieldSpec(rolebinding.FieldID, field.TypeString))
 	id, ok := rbuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "RoleBinding.id" for update`)}

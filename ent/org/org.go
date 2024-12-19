@@ -84,6 +84,8 @@ var (
 	StatusValidator func(string) error
 	// TypeValidator is a validator for the "type" field. It is called by the builders before save.
 	TypeValidator func(string) error
+	// DefaultID holds the default value on creation for the "id" field.
+	DefaultID func() string
 )
 
 // OrderOption defines the ordering options for the Org queries.

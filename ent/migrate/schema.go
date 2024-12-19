@@ -11,7 +11,7 @@ import (
 var (
 	// TotoroOrgColumns holds the columns for the "totoro_org" table.
 	TotoroOrgColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt64, Increment: true},
+		{Name: "id", Type: field.TypeString},
 		{Name: "delete_time", Type: field.TypeInt64, Default: 0},
 		{Name: "create_time", Type: field.TypeTime},
 		{Name: "update_time", Type: field.TypeTime},
@@ -30,7 +30,7 @@ var (
 	}
 	// TotoroRoleColumns holds the columns for the "totoro_role" table.
 	TotoroRoleColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt64, Increment: true},
+		{Name: "id", Type: field.TypeString},
 		{Name: "delete_time", Type: field.TypeInt64, Default: 0},
 		{Name: "create_time", Type: field.TypeTime},
 		{Name: "update_time", Type: field.TypeTime},
@@ -47,7 +47,7 @@ var (
 	}
 	// TotoroRoleBindingColumns holds the columns for the "totoro_role_binding" table.
 	TotoroRoleBindingColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt64, Increment: true},
+		{Name: "id", Type: field.TypeString},
 		{Name: "delete_time", Type: field.TypeInt64, Default: 0},
 		{Name: "create_time", Type: field.TypeTime},
 		{Name: "update_time", Type: field.TypeTime},
@@ -65,7 +65,7 @@ var (
 	}
 	// TotoroUserColumns holds the columns for the "totoro_user" table.
 	TotoroUserColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "id", Type: field.TypeString},
 		{Name: "delete_time", Type: field.TypeInt64, Default: 0},
 		{Name: "create_time", Type: field.TypeTime},
 		{Name: "update_time", Type: field.TypeTime},

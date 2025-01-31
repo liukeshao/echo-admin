@@ -2,7 +2,7 @@ package services
 
 import (
 	"context"
-	"fmt"
+	"github.com/samber/oops"
 	"strings"
 
 	"github.com/liukeshao/echo-admin/ent"
@@ -18,32 +18,36 @@ func NewUserService(orm *ent.Client) *UserService {
 }
 
 func (s *UserService) FindById(ctx context.Context, id string) (*ent.User, error) {
+	eb := oops.Code("user.not.exist").In("user").With("id", id).Public("not found")
 	u, err := s.orm.User.Query().
 		Where(user.ID(id)).
 		Only(ctx)
-	if err != nil {
-		return nil, err
-	}
-	return u, nil
+	return u, eb.Wrap(err)
 }
 
 func (s *UserService) FindByEmail(ctx context.Context, email string) (*ent.User, error) {
+	eb := oops.Code("user.not.exist").In("user:find_by_email").With("email", email).Public("not found")
 	u, err := s.orm.User.Query().
 		Where(user.Email(strings.ToLower(email))).
 		Only(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("get user %s: %w", email, err)
-	}
-	return u, nil
+	return u, eb.Wrap(err)
 }
 
 func (s *UserService) Create(ctx context.Context, email, password string) (*ent.User, error) {
+	eb := oops.Code("user.create.error").In("user:create").With("email", email).Public("user create error")
 	u, err := s.orm.User.Create().
 		SetEmail(email).
 		SetPassword(password).
 		Save(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("create user: %w", err)
+	return u, eb.Wrap(err)
+}
+
+func (s *UserService) UpdatePassword(ctx context.Context, id string, encryptPassword string) (*ent.User, error) {
+	eb := oops.Code("user.update_password.error").In("user:update_password").With("id", id).Public("user update password error")
+	param := ent.User{
+		ID:       id,
+		Password: encryptPassword,
 	}
-	return u, nil
+	u, err := s.orm.User.UpdateOne(&param).Save(ctx)
+	return u, eb.Wrap(err)
 }
